@@ -1,0 +1,17 @@
+import pygame
+pygame.init()
+screenwidth, screenheight = 640, 480
+screen = pygame.display.set_mode((screenwidth, screenheight))
+display = pygame.display.set_caption("My first game screen!")
+coloure = (0, 255, 50)
+text = pygame.font.Font(None, 85).render("[$(100)$]", True,pygame.Color("white"))
+textrect = text.get_rect(center = (325, 210))
+bgcolor = screen.fill((255, 255, 255))
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    pygame.draw.rect(screen, coloure, pygame.Rect(200, 160, 250, 100))
+    screen.blit(text, textrect)
+    pygame.display.flip()
