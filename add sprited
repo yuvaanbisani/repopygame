@@ -1,0 +1,43 @@
+import pygame
+
+screenw, screenh = 600, 600
+rectw, recth = 400, 250
+speed = 10
+done = False
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode((screenw, screenh))
+spritegroup = pygame.sprite.Group()
+
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, color, height, width):
+        super().__init__()
+        self.image = pygame.Surface([width, height])
+        self.image.fill(pygame.Color("white"))
+        pygame.draw.rect(self.image, color, pygame.Rect(0, 0, width, height))
+        self.rect = self.image.get_rect()
+    
+    def move(self, xmove, ymove):
+        self.rect.x = max(min(self.rect.x + xmove, screenw - self.rect.width), 0)
+        self.rect.y = max(min(self.rect.y + ymove, screenh - self.rect.height), 0)
+
+sprite = Sprite((0, 0, 255), 67, 67)
+sprite.rect.x, sprite.rect.y = 200, 200
+spritegroup.add(sprite)
+
+sprite2 = Sprite((0, 255, 0), 67, 67)
+sprite2.rect.x, sprite2.rect.y = 20, 20
+spritegroup.add(sprite2)
+
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+    keys = pygame.key.get_pressed()
+    xmove = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * speed
+    ymove = (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * speed
+    sprite.move(xmove, ymove)
+    #sprite2.move(xmove, ymove)
+    pygame.display.flip()
+    spritegroup.draw(screen)
+    clock.tick(30)
+pygame.quit()
