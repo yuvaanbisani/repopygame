@@ -37,6 +37,7 @@ while not done:
     ymove = (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * speed
     sprite.move(xmove, ymove)
     #sprite2.move(xmove, ymove)
+    screen.fill((0, 0, 0))
     pygame.display.flip()
     spritegroup.draw(screen)
     clock.tick(30)
