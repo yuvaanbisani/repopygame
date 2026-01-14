@@ -1,0 +1,119 @@
+#space invaders
+import pygame
+import math
+import random
+#constants vvv | AAAA imports
+screenwidth = 800
+screenheight = 500
+playerstartx = 370
+playerstarty = 380
+enemyrangeymin = 50
+enemyrangeymax = 150
+enemyspeedx = 4
+enemyspeedy = 40
+bulletspeedy = 10
+collisiondistance = 27
+
+pygame.init()
+#windows
+screen = pygame.display.set_mode((screenwidth, screenheight))
+pygame.display.set_caption("Space Invaders")
+#icon
+icon = pygame.image.load("ufo.png")
+pygame.display.set_icon(icon)
+#player and enemy var
+playerimg = pygame.image.load("player.png")
+playerx = playerstartx
+playery = playerstarty
+playerxchange = 0
+enemyimg = []
+enemyx = []
+enemyy = []
+enemyxchange = []
+enemyychange = []
+noofenemy = 6
+#enemy stuff
+for i in range(noofenemy):
+    enemyimg.append(pygame.image.load("enemy.png"))
+    enemyx.append(random.randint(0, screenwidth - 64))
+    enemyy.append(random.randint(enemyrangeymin, enemyrangeymax))
+    enemyxchange.append(enemyspeedx)
+    enemyychange.append(enemyspeedy)
+    #bullet var
+bulletimg = pygame.image.load("bullet.png")
+bulletx = 0
+bullety = playerstarty
+bulletxchange = 0
+bulletychange = bulletspeedy
+bulletstate = "ready"
+score = 0
+font = pygame.font.Font("freesansbold.ttf", 32)
+textx = 10
+texty = 10
+gameoverfont = pygame.font.Font("freesansbold.ttf", 64)
+# defs
+def showscore(x, y):
+    scoretext = font.render("score ; " + str(score), False, (255, 255, 255))
+    screen.blit(scoretext, (x, y))
+def gameovertext():
+    gameovertext = gameoverfont.render("GAMEOVER!!!!!! HAHAHAH", True, (255, 0, 0))
+    screen.blit(gameovertext, (200, 250))
+def player(x, y):
+    screen.blit(playerimg, (x, y))
+def enemy(x, y, i):
+    screen.blit(enemyimg[i], (x, y))
+def firebullet(x, y):
+    global bulletstate
+    bulletstate = "fired"
+    screen.blit(bulletimg, (x + 16, y + 10))
+def iscollision(enemyx, enemyy, bulletx, bullety):
+    distance = math.sqrt(((enemyx - bulletx) ** 2 + (enemyy - bullety) ** 2))
+    return distance < collisiondistance
+running = True
+clock = pygame.time.Clock()
+while running:
+    screen.fill((0, 0, 0))
+    background = pygame.image.load("background.png")
+    screen.blit(background, (0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                playerxchange = -5
+            if event.key == pygame.K_RIGHT:
+                playerxchange = 5
+            if event.key == pygame.K_SPACE and bulletstate == "ready":
+                bulletx = playerx
+                firebullet(bulletx, bullety)
+        if event.type == pygame.KEYUP and event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
+            playerxchange = 0
+    playerx += playerxchange
+    playerx = max(0, min(playerx, screenwidth - 64))
+    for i in range(noofenemy):
+        if enemyy[i] > 340:
+            for j in range(noofenemy):
+                enemyy[j] = 2000
+            gameovertext()
+            break
+        enemyx[i] += enemyxchange[i]
+        if enemyx[i] <= 0 or enemyx[i] >= screenwidth - 64:
+            enemyxchange[i] *= -1
+            enemyy[i] += enemyychange[i]
+            if iscollision(enemyx[i], enemyy[i], bulletx, bullety):
+                bullety = playerstarty
+                bulletstate = "ready"
+                scorevalue += 1
+                enemyx[i] = random.randint(0, screenwidth - 64)
+                enemyy[i] = random.randint(enemyrangeymin, enemyrangeymax)
+            enemy(enemyx[i], enemyy[i], i)
+            if bullety <= 0:
+                bullety = playerstarty
+                bulletstate = "ready"
+            elif bulletstate == "fired":
+                firebullet(bulletx, bullety)
+                bullety -= bulletychange
+        player(playerx, playery)
+        showscore(textx, texty)
+        pygame.display.update()
+        
